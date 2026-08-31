@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Aatmoday Hobby Matchmaker"
+description = "A friendly campus discovery app for college students to share their interests and find the hobby clubs that fit them best, with personalized match reasons and conversation starters."
+version = "1.0.0"
+id = "artifacts/aatmoday-hobby-matchmaker"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23274
+
+[services.development]
+run = "pnpm --filter @workspace/aatmoday-hobby-matchmaker run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/aatmoday-hobby-matchmaker", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/aatmoday-hobby-matchmaker/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23274"
+BASE_PATH = "/"
