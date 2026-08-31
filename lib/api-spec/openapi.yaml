@@ -1,0 +1,113 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: matching
+    description: Hobby matching operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /matches:
+    post:
+      operationId: findHobbyMatches
+      tags: [matching]
+      summary: Find hobby group matches
+      description: Uses a student's interests to find the most relevant campus hobby groups.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HobbyMatchInput"
+      responses:
+        "200":
+          description: Matching groups or a friendly fallback
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HobbyMatchResponse"
+        "400":
+          description: Invalid or empty input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Matching provider unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    HobbyMatchInput:
+      type: object
+      properties:
+        interests:
+          type: string
+          minLength: 1
+          maxLength: 800
+      required:
+        - interests
+    HobbyGroupMatch:
+      type: object
+      properties:
+        groupName:
+          type: string
+        reason:
+          type: string
+        icebreaker:
+          type: string
+      required:
+        - groupName
+        - reason
+        - icebreaker
+    HobbyMatchResponse:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: "#/components/schemas/HobbyGroupMatch"
+        fallback:
+          type: boolean
+        message:
+          type: string
+      required:
+        - matches
+        - fallback
+        - message
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
